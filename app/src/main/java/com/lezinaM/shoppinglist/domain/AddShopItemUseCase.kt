@@ -1,7 +1,7 @@
 package com.lezinaM.shoppinglist.domain
 
-class AddShopItemUseCase {
+class AddShopItemUseCase (private val shoppingListRepository: ShoppingListRepository){
     fun addShopItem (shopItem: ShopItem) {
-
+shoppingListRepository.addShopItem(shopItem)
     }
 }

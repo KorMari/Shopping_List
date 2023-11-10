@@ -1,7 +1,7 @@
 package com.lezinaM.shoppinglist.domain
 
-class GetShopListUseCase {
+class GetShopListUseCase (private val shoppingListRepository: ShoppingListRepository) {
     fun getShopList () : List <ShopItem> {
-        TODO()
+      return  shoppingListRepository.getShopList()
     }
 }
