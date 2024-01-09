@@ -1,12 +1,23 @@
 package com.lezinaM.shoppinglist.data
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.lezinaM.shoppinglist.domain.ShopItem
 import com.lezinaM.shoppinglist.domain.ShoppingListRepository
+import kotlin.random.Random
 
 object ShopListRepositoryImpl: ShoppingListRepository {
-
-    private val shopList = mutableListOf<ShopItem>()
+    private val shopListLD = MutableLiveData<List<ShopItem>>()
+    private val shopList = sortedSetOf<ShopItem>({o1,o2 -> o1.id.compareTo(o2.id)})
     private  var autoIncrementId = 0
+
+    init {
+        for (i in 0 until 100) {
+            val item = ShopItem("Name $i", i, Random.nextBoolean())
+            addShopItem(item)
+        }
+    }
+
 
 
     override fun addShopItem(shopItem: ShopItem) {
@@ -14,10 +25,12 @@ object ShopListRepositoryImpl: ShoppingListRepository {
             shopItem.id = autoIncrementId++
         }
         shopList.add(shopItem)
+        updateShopList()
     }
 
     override fun deleteShopItem(shopItem: ShopItem) {
        shopList.remove(shopItem)
+        updateShopList()
     }
 
     override fun editShopItem(shopItem: ShopItem) {
@@ -32,7 +45,13 @@ object ShopListRepositoryImpl: ShoppingListRepository {
         }?: throw RuntimeException("Element with id $idShopItem is not found.")
     }
 
-    override fun getShopList(): List<ShopItem> {
-        return shopList.toList()
+    override fun getShopList(): LiveData<List<ShopItem>> {
+        return shopListLD
+    }
+
+    fun updateShopList (){
+
+        shopListLD.value = shopList.toList()
+
     }
 }
