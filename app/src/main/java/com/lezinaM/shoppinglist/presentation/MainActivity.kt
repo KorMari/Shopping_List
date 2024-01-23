@@ -1,12 +1,13 @@
 package com.lezinaM.shoppinglist.presentation
 
+import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglist.R
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
@@ -21,19 +22,39 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.shopList.observe(this) {
             shopListAdapter.submitList(it)
-            }
+        }
+
+        val buttonAddItem = findViewById<FloatingActionButton>(R.id.button_add_shop_item)
+
+        buttonAddItem.setOnClickListener {
+            val intent = ShopItemActivity.newIntentAddItem(this)
+            startActivity(intent)
+        }
+
+
     }
 
+    @SuppressLint("SuspiciousIndentation")
     private fun setupRecyclerView() {
         val rvShoplist = findViewById<RecyclerView>(R.id.rv_shop_list)
         shopListAdapter = ShopListAdapter()
         rvShoplist.adapter = shopListAdapter
-        rvShoplist.recycledViewPool.setMaxRecycledViews(ShopListAdapter.VIEW_TYPE_ENABLED, ShopListAdapter.MAX_POOL_OBJECT_SIZE)
-        rvShoplist.recycledViewPool.setMaxRecycledViews(ShopListAdapter.VIEW_TYPE_DISABLED, ShopListAdapter.MAX_POOL_OBJECT_SIZE)
-        shopListAdapter.onShopItemLongClickListener = {viewModel.changeEnabled(it)}
-shopListAdapter.onShopItemShortClickListener = {Log.d("MainActivity.ShopListAdapter","EditShopItem")}
+        rvShoplist.recycledViewPool.setMaxRecycledViews(
+            ShopListAdapter.VIEW_TYPE_ENABLED,
+            ShopListAdapter.MAX_POOL_OBJECT_SIZE
+        )
+        rvShoplist.recycledViewPool.setMaxRecycledViews(
+            ShopListAdapter.VIEW_TYPE_DISABLED,
+            ShopListAdapter.MAX_POOL_OBJECT_SIZE
+        )
+        shopListAdapter.onShopItemLongClickListener = { viewModel.changeEnabled(it) }
+        shopListAdapter.onShopItemShortClickListener = {
+    val intent = ShopItemActivity.newIntentEditItem(this, it.id)
+            startActivity(intent)
+        }
 
-        val callback = object : ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT){
+        val callback = object :
+            ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
@@ -48,7 +69,7 @@ shopListAdapter.onShopItemShortClickListener = {Log.d("MainActivity.ShopListAdap
 
             }
         }
-val itemTouchHelper = ItemTouchHelper(callback)
+        val itemTouchHelper = ItemTouchHelper(callback)
         itemTouchHelper.attachToRecyclerView(rvShoplist)
     }
 
