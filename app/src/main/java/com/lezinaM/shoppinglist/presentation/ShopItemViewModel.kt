@@ -40,7 +40,7 @@ class ShopItemViewModel : ViewModel() {
         if (fieldsValid) {
             val shopItem = ShopItem(name, count, true)
             addShopItemUseCase.addShopItem(shopItem)
-            _shouldCloseScreen.value = Unit
+            finishWork()
         }
 
     }
@@ -54,11 +54,14 @@ class ShopItemViewModel : ViewModel() {
             _shopItemLD.value?.let {
                 val item = it.copy(name = name, count = count)
                 editShopItemUseCase.editShopItem(item)
-                _shouldCloseScreen.value = Unit
+                finishWork()
 
             }
 
         }
+    }
+    private fun finishWork (){
+        _shouldCloseScreen.value = Unit
     }
 
     fun getShopItem(shopItemId: Int) {
